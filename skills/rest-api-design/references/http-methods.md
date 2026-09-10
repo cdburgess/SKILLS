@@ -2,13 +2,13 @@
 
 Use methods according to their standard semantics. Do not invent private meanings.
 
-| Method   | Typical Use                                         | Idempotent | Safe |
-|----------|-----------------------------------------------------|------------|------|
-| `GET`    | Retrieve a resource or collection                   | Yes        | Yes  |
-| `POST`   | Create a resource or start a non-idempotent process | No         | No   |
-| `PUT`    | Replace the entire resource                         | Yes        | No   |
-| `PATCH`  | Partially update a resource                         | No*        | No   |
-| `DELETE` | Remove a resource                                   | Yes        | No   |
+| Method | Typical Use | Idempotent | Safe |
+|--------|-------------|------------|------|
+| `GET`  | Retrieve a resource or collection | Yes | Yes |
+| `POST` | Create a resource or start a non-idempotent process | No | No |
+| `PUT`  | Replace the entire resource | Yes | No |
+| `PATCH`| Partially update a resource | No* | No |
+| `DELETE` | Remove a resource | Yes | No |
 
 *PATCH is not required to be idempotent, though many implementations make it so.
 

@@ -41,4 +41,11 @@ Laravel Boost already encodes framework best practices. Map the eight REST laws 
 - Laravel’s built-in rate limiters for `429` responses
 - Always enforce authorization at the resource level (Policies), not only authentication
 
-The framework gives you the tools. The eight laws keep the resulting HTTP surface predictable.
+## OpenAPI / Self-Documenting Contracts
+
+- Add PHP attributes (preferred) or annotations on controllers, Form Requests, and API Resources so an OpenAPI generator can produce an accurate contract.
+- Recommended generator: `dedoc/scramble` (strong attribute support and tight Laravel integration). Alternatives: Scribe or l5-swagger.
+- Ensure the generated document reflects the project conventions: kebab-case paths, camelCase route parameters, camelCase JSON keys, shared error envelope, and pagination meta.
+- Treat the generated OpenAPI document as the machine-readable expression of the eight laws. Keep it in sync via CI.
+
+The framework gives you the tools. The eight laws + OpenAPI attributes keep the resulting HTTP surface both predictable and self-documenting.

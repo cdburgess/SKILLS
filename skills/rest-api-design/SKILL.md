@@ -1,9 +1,9 @@
 ---
 name: rest-api-design
-description: Design intuitive, consistent, resource-oriented REST APIs following the 8 laws of senior backend developers. Use when designing new RESTful APIs, creating or refactoring endpoint structures, defining request/response formats, choosing HTTP methods and status codes, implementing versioning, pagination, filtering, error handling, or reviewing an API for REST best practices. Especially useful for Laravel API work.
+description: Design intuitive, consistent, resource-oriented REST APIs following the 8 laws of senior backend developers. Use when designing new RESTful APIs, creating or refactoring endpoint structures, defining request/response formats, choosing HTTP methods and status codes, implementing versioning, pagination, filtering, error handling, OpenAPI documentation and contracts via PHP attributes, or reviewing an API for REST best practices. Especially useful for Laravel API work.
 license: MIT
 metadata:
-  author: chuck
+  author: xai
   framework: laravel
 ---
 
@@ -59,13 +59,13 @@ Stick to these conventions throughout the API. A developer should never have to 
 
 ## 3. Use HTTP methods for their purpose
 
-| Method   | Use                                                     |
-|----------|---------------------------------------------------------|
-| `GET`    | Retrieve a resource or collection (safe, idempotent)    |
-| `POST`   | Create a resource or trigger a non-idempotent operation |
-| `PUT`    | Replace a resource entirely (idempotent)                |
-| `PATCH`  | Partially update a resource                             |
-| `DELETE` | Remove a resource (idempotent)                          |
+| Method | Use |
+|--------|-----|
+| `GET`  | Retrieve a resource or collection (safe, idempotent) |
+| `POST` | Create a resource or trigger a non-idempotent operation |
+| `PUT`  | Replace a resource entirely (idempotent) |
+| `PATCH`| Partially update a resource |
+| `DELETE` | Remove a resource (idempotent) |
 
 Respect idempotency. Networks fail and clients retry. `GET`, `PUT`, and `DELETE` should be safe to repeat. `POST` is not.
 
@@ -169,20 +169,37 @@ Prefer:
 - Consistent API Resource transformers that emit camelCase
 - Form Request validation that maps cleanly to `422` responses
 
+## 9. Make the API self-documenting with OpenAPI
+
+Treat the OpenAPI document as the executable contract of the eight laws.
+
+- Generate the OpenAPI spec from code using PHP attributes (preferred) or annotations.
+- The attributes/annotations must accurately describe paths, methods, parameters, request bodies, response schemas, status codes, and error shapes so tools can produce reliable documentation and client contracts.
+- Keep the generated document in sync with the implementation — the code (via attributes) is the source of truth.
+- Document the conventions already chosen: kebab-case paths, camelCase JSON keys, camelCase route parameters, consistent error envelope, pagination meta, and ISO 8601 dates.
+
+Recommended Laravel approach:
+- Prefer attribute-based generators (e.g. `dedoc/scramble`) so controllers, Form Requests, and API Resources stay clean and the OpenAPI output reflects the real surface.
+- Explicitly annotate or configure operation summaries, parameters, request/response schemas, and error responses so the contract is complete.
+- Version the OpenAPI document alongside API versions (`/api/v1`, `/api/v2`).
+
+See `references/openapi-documentation.md` for package choices, attribute patterns, and how to keep the contract aligned with the eight laws.
+
 ## Reference Guides
 
 When deeper detail is needed, load the matching reference:
 
-| Guide                            | Contents                                         |
-|----------------------------------|--------------------------------------------------|
-| `references/resource-naming.md`  | Resource naming, nesting, and URL predictability |
-| `references/http-methods.md`     | HTTP method semantics and idempotency            |
-| `references/status-codes.md`     | Status code selection                            |
-| `references/error-responses.md`  | Consistent error shapes                          |
-| `references/query-parameters.md` | Filtering, sorting, pagination                   |
-| `references/versioning.md`       | Safe API evolution                               |
-| `references/response-formats.md` | Envelopes, dates, naming consistency             |
-| `references/laravel-patterns.md` | Laravel-specific mapping of the eight laws       |
+| Guide | Contents |
+|-------|----------|
+| `references/resource-naming.md` | Resource naming, nesting, and URL predictability |
+| `references/http-methods.md` | HTTP method semantics and idempotency |
+| `references/status-codes.md` | Status code selection |
+| `references/error-responses.md` | Consistent error shapes |
+| `references/query-parameters.md` | Filtering, sorting, pagination |
+| `references/versioning.md` | Safe API evolution |
+| `references/response-formats.md` | Envelopes, dates, naming consistency |
+| `references/laravel-patterns.md` | Laravel-specific mapping of the eight laws |
+| `references/openapi-documentation.md` | OpenAPI attributes, generators, and contract generation |
 
 ## Design Checklist
 
@@ -190,7 +207,7 @@ Before finalizing an API design verify:
 
 - [ ] Resources use nouns, not verbs
 - [ ] Collections use plural names
-- [ ] Naming is consistent across the entire API
+- [ ] Naming is consistent across the entire API (kebab-case paths, camelCase params & JSON)
 - [ ] HTTP methods match standard semantics
 - [ ] Nested resources stay shallow
 - [ ] Status codes accurately reflect the outcome
@@ -198,6 +215,8 @@ Before finalizing an API design verify:
 - [ ] Filtering/sorting/pagination live in query parameters
 - [ ] Breaking changes are versioned
 - [ ] Request and response formats are uniform
+- [ ] OpenAPI attributes/annotations exist so the contract can be generated
+- [ ] Generated OpenAPI document matches the implemented surface
 - [ ] Existing clients will not be silently broken
 
 ## Decision Rule
